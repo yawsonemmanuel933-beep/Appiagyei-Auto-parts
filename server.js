@@ -204,7 +204,7 @@ async function start() {
   registerRoutes();
 
   // Serve frontend
-  const frontendPath = process.env.FRONTEND_PATH || path.join(__dirname, '..', 'pos');
+  const frontendPath = process.env.FRONTEND_PATH || __dirname;
   if (fs.existsSync(frontendPath)) {
     app.use(express.static(frontendPath));
     app.get('*', (req, res) => {
