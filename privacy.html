@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — SYNC-STORE</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #0b1120;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+    h1 { color: #f1f5f9; font-size: 1.8rem; margin-bottom: 0.5rem; }
+    h2 { color: #93c5fd; font-size: 1.2rem; margin-top: 2rem; }
+    hr { border: none; border-top: 1px solid #1e293b; margin: 2rem 0; }
+    p { margin: 0.8rem 0; }
+    strong { color: #f1f5f9; }
+    .updated { color: #94a3b8; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>Privacy Policy</h1>
+  <p class="updated"><strong>Last updated:</strong> July 25, 2026</p>
+
+  <p>This Privacy Policy describes how SYNC-STORE ("we", "our", or "the app") handles your data.</p>
+
+  <h2>Data We Collect</h2>
+  <p>The app stores the following data locally on your device and optionally syncs it to a private server you control:</p>
+  <ul>
+    <li><strong>Transaction data</strong> — Sales records, items sold, prices, payment methods</li>
+    <li><strong>Inventory data</strong> — Brand, car type, year, side/part, prices, quantities</li>
+    <li><strong>Customer names</strong> — Customer names and optional contact details (email, phone)</li>
+    <li><strong>Supplier information</strong> — Supplier names and contact details</li>
+    <li><strong>User accounts</strong> — Usernames and hashed passwords for system access</li>
+    <li><strong>Audit logs</strong> — Records of actions taken within the system</li>
+  </ul>
+
+  <h2>How We Use Data</h2>
+  <p>All data is used solely for the purpose of operating the point-of-sale system:</p>
+  <ul>
+    <li>Processing sales transactions</li>
+    <li>Managing inventory and stock levels</li>
+    <li>Generating sales reports and analytics</li>
+    <li>Managing customer and supplier relationships</li>
+    <li>Providing role-based access control</li>
+  </ul>
+
+  <h2>Data Storage & Security</h2>
+  <ul>
+    <li><strong>Local storage:</strong> Data is stored in your browser's localStorage and an on-device SQLite database</li>
+    <li><strong>Server storage:</strong> When syncing is enabled, data is transmitted via HTTPS to your private server and stored in a SQLite database</li>
+    <li><strong>Passwords:</strong> User passwords are hashed using bcrypt before storage. Plain-text passwords are never stored</li>
+    <li><strong>Transmission:</strong> All data sent between the app and your server is encrypted using HTTPS/TLS</li>
+  </ul>
+
+  <h2>Data Sharing</h2>
+  <p>We do <strong>not</strong> share, sell, or transmit your data to any third parties. All data remains on your devices and your private server.</p>
+
+  <h2>Data Retention</h2>
+  <p>Data is retained until you choose to delete it. You can clear all records from the app's settings at any time. Database files can be deleted manually from the server.</p>
+
+  <h2>Your Rights</h2>
+  <p>You have full control over your data:</p>
+  <ul>
+    <li>You can view, modify, or delete any records through the app interface</li>
+    <li>You can clear all data from the dashboard</li>
+    <li>You can stop syncing and keep data only locally</li>
+    <li>You can delete the server database file at any time</li>
+  </ul>
+
+  <h2>Children's Privacy</h2>
+  <p>This app is intended for business use and is not directed at children under 13. We do not knowingly collect data from children.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated date.</p>
+
+  <h2>Contact</h2>
+  <p>If you have questions about this Privacy Policy, please contact the system administrator of your instance.</p>
+
+  <hr />
+  <p class="updated">SYNC-STORE — Built with offline-first architecture.</p>
+</body>
+</html>

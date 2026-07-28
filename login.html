@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>SYNC-STORE - Login</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%231d4ed8'/%3E%3Ctext x='96' y='130' text-anchor='middle' font-size='110' font-weight='bold' fill='white' font-family='system-ui'%3ESS%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="login-shell">
+    <section class="login-card">
+      <div class="login-header">
+        <h1>Sign In</h1>
+        <p class="login-subtitle">SYNC-STORE</p>
+      </div>
+      <form id="loginForm" class="login-form" autocomplete="off" novalidate>
+        <div class="login-field">
+          <label for="loginUsername">Username</label>
+          <input type="text" id="loginUsername" placeholder="Enter username" required maxlength="50" autocorrect="off" spellcheck="false" autocomplete="username" />
+        </div>
+        <div class="login-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter password" required maxlength="128" autocomplete="current-password" />
+        </div>
+        <div class="login-field">
+          <label for="roleSelect">Role</label>
+          <select id="roleSelect">
+            <option value="salesperson">Sales Person</option>
+            <option value="manager">Manager</option>
+          </select>
+        </div>
+        <p id="loginMessage" class="login-message"></p>
+        <button type="submit" id="btnLoginSubmit" class="button primary login-btn">Sign In</button>
+      </form>
+      <div class="login-hint">
+        <p>Don't have an account? Ask the <strong>Manager</strong> to create one for you.</p>
+      </div>
+      <p class="login-footer">
+        <a href="index.html">← Back to Welcome</a>
+      </p>
+    </section>
+  </main>
+  <script src="api.js"></script>
+  <script src="db.js"></script>
+  <script src="syncService.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1d4ed8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>SYNC-STORE - Welcome</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='32' fill='%231d4ed8'/%3E%3Ctext x='96' y='130' text-anchor='middle' font-size='110' font-weight='bold' fill='white' font-family='system-ui'%3ESS%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="welcome-shell">
+    <section class="welcome-card">
+      <div class="welcome-copy">
+        <p class="eyebrow">SYNC-STORE</p>
+        <h1>Welcome to the POS Management Portal</h1>
+        <p class="welcome-text">Use the welcome page to sign in securely before entering the sales dashboard. The system now supports separate login access for the salesperson and the manager.</p>
+        <div class="welcome-actions">
+          <a class="button primary" href="login.html">Go to Login</a>
+          <a class="button secondary" href="login.html">Continue to Access Portal</a>
+        </div>
+      </div>
+      <div class="welcome-side">
+        <div class="mini-stat">
+          <span>Sales Desk</span>
+          <strong>Checkout + sales history</strong>
+        </div>
+        <div class="mini-stat">
+          <span>Manager View</span>
+          <strong>Inventory + suppliers + audit</strong>
+        </div>
+        <div class="mini-stat">
+          <span>Access Control</span>
+          <strong>Role-based entry screens</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="api.js"></script>
+  <script src="db.js"></script>
+  <script src="syncService.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

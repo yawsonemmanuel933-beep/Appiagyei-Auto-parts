@@ -1,0 +1,55 @@
+{
+  "name": "SYNC-STORE",
+  "short_name": "SYNC-STORE",
+  "description": "Point of Sale system — works offline and syncs automatically.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1120",
+  "theme_color": "#1d4ed8",
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "screenshots": [
+    {
+      "src": "screenshot-1.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "label": "Sales Dashboard with product catalog and shopping cart"
+    },
+    {
+      "src": "screenshot-2.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "label": "Checkout with payment method selection"
+    },
+    {
+      "src": "screenshot-3.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "label": "Inventory management for managers"
+    }
+  ],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
