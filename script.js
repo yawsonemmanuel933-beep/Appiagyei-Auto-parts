@@ -474,12 +474,12 @@ async function syncFromServer() {
       API.get('/restocks'),
       API.get('/audit')
     ]);
-    // Update local arrays
-    inventory.length = 0; inventory.push(...inv.map(normalizeInventoryItem));
-    salesHistory.length = 0; salesHistory.push(...sales);
-    customers.length = 0; customers.push(...cust);
-    suppliers.length = 0; suppliers.push(...supp);
-    purchaseOrders.length = 0; purchaseOrders.push(...orders);
+    // Update local arrays (set serverId for items downloaded from server)
+    inventory.length = 0; inventory.push(...inv.map(item => { const n = normalizeInventoryItem(item); n.serverId = item.id; return n; }));
+    salesHistory.length = 0; salesHistory.push(...sales.map(s => { if (s.id) s.serverId = s.id; return s; }));
+    customers.length = 0; customers.push(...cust.map(c => { if (c.id) c.serverId = c.id; return c; }));
+    suppliers.length = 0; suppliers.push(...supp.map(s => { if (s.id) s.serverId = s.id; return s; }));
+    purchaseOrders.length = 0; purchaseOrders.push(...orders.map(o => { if (o.id) o.serverId = o.id; return o; }));
     restocks.length = 0; restocks.push(...restocksData);
     auditLog.length = 0; auditLog.push(...audit);
     // Update localStorage
@@ -500,10 +500,64 @@ async function syncToServer(dataType, data) {
   if (!apiConnected) return;
   try {
     if (dataType === 'inventory') {
-      // Full inventory sync (replace)
+      // Sync inventory - POST new items, PUT existing items with serverId
       for (const item of data) {
-        try { await API.put('/inventory/' + item.id, item); } catch (_) {}
+        try {
+          if (item.serverId) {
+            await API.put('/inventory/' + item.serverId, item);
+          } else {
+            const saved = await API.post('/inventory', {
+              brand: item.brand,
+              carType: item.carType,
+              year: item.year || '',
+              sidePart: item.sidePart || '',
+              price: item.price || 0,
+              cost: item.cost || 0,
+              quantity: item.quantity || 0,
+              lowThreshold: item.lowThreshold || 3
+            });
+            if (saved && saved.id) item.serverId = saved.id;
+          }
+        } catch (_) {}
       }
+      // Re-save localStorage to capture any new serverIds
+      localStorage.setItem(STORAGE_KEYS.inventory, JSON.stringify(inventory));
+    } else if (dataType === 'customers') {
+      for (const c of data) {
+        try {
+          if (c.serverId) {
+            await API.put('/customers/' + c.serverId, c);
+          } else {
+            const saved = await API.post('/customers', { name: c.name, email: c.email || '', phone: c.phone || '' });
+            if (saved && saved.id) c.serverId = saved.id;
+          }
+        } catch (_) {}
+      }
+      localStorage.setItem(STORAGE_KEYS.customers, JSON.stringify(customers));
+    } else if (dataType === 'suppliers') {
+      for (const s of data) {
+        try {
+          if (s.serverId) {
+            await API.put('/suppliers/' + s.serverId, s);
+          } else {
+            const saved = await API.post('/suppliers', { name: s.name, contact: s.contact || '', email: s.email || '', phone: s.phone || '' });
+            if (saved && saved.id) s.serverId = saved.id;
+          }
+        } catch (_) {}
+      }
+      localStorage.setItem(STORAGE_KEYS.suppliers, JSON.stringify(suppliers));
+    } else if (dataType === 'purchaseOrders') {
+      for (const po of data) {
+        try {
+          if (po.serverId) {
+            await API.put('/purchase-orders/' + po.serverId, po);
+          } else {
+            const saved = await API.post('/purchase-orders', po);
+            if (saved && saved.id) po.serverId = saved.id;
+          }
+        } catch (_) {}
+      }
+      localStorage.setItem(STORAGE_KEYS.purchaseOrders, JSON.stringify(purchaseOrders));
     } else if (dataType === 'sales') {
       // Sales are already posted individually during checkout
     } else if (dataType === 'audit') {
@@ -514,6 +568,16 @@ async function syncToServer(dataType, data) {
   } catch (e) {
     console.warn('Failed to sync ' + dataType + ' to server.', e);
   }
+}
+// Push all local data to server (used before syncing from server to prevent data loss)
+async function pushAllLocalData() {
+  if (!apiConnected) return;
+  const tasks = [];
+  if (inventory.length > 0) tasks.push(syncToServer('inventory', inventory));
+  if (customers.length > 0) tasks.push(syncToServer('customers', customers));
+  if (suppliers.length > 0) tasks.push(syncToServer('suppliers', suppliers));
+  if (purchaseOrders.length > 0) tasks.push(syncToServer('purchaseOrders', purchaseOrders));
+  await Promise.allSettled(tasks);
 }
 async function syncUserToServer(action, userData) {
   if (!apiConnected) return;
@@ -3541,11 +3605,10 @@ function setupEventListeners() {
           return;
         }
         saveStoredSession({ role: account.role, username: account.username });
-        // If API is connected, sync data from server
+        // If API is connected, push local data then sync from server
         if (apiConnected) {
-          // Clear any stale localStorage data before syncing fresh from API
-          Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
           try {
+            await pushAllLocalData();
             await syncFromServer();
           } catch (e) {
             console.warn('Initial data sync failed, using local data.', e);
@@ -3717,6 +3780,9 @@ function setupEventListeners() {
       $btnSyncNow.disabled = true;
       $btnSyncNow.textContent = 'Syncing...';
       try {
+        // First push local data to server
+        await pushAllLocalData();
+        // Then run SyncService sync cycle
         const result = await SyncService.syncNow();
         if (result && result.online) {
           // Refresh all data from DB/localStorage
@@ -3942,6 +4008,64 @@ function setupEventListeners() {
           $credMessage.textContent = 'Failed to update credentials. Try again.';
           $credMessage.className = 'login-message error';
         }
+      }
+    });
+  }
+
+  // ============================
+  // PUSH / PULL DATA SYNC BUTTONS
+  // ============================
+  const $btnPushToServer = document.getElementById('btnPushToServer');
+  const $btnPullFromServer = document.getElementById('btnPullFromServer');
+  const $syncDataMessage = document.getElementById('syncDataMessage');
+
+  if ($btnPushToServer) {
+    $btnPushToServer.addEventListener('click', async () => {
+      if (!apiConnected) {
+        if ($syncDataMessage) { $syncDataMessage.textContent = 'Cannot connect to server. Please check your connection.'; $syncDataMessage.className = 'login-message error'; }
+        return;
+      }
+      $btnPushToServer.disabled = true;
+      $btnPushToServer.textContent = 'Syncing...';
+      if ($syncDataMessage) { $syncDataMessage.textContent = ''; $syncDataMessage.className = 'login-message'; }
+      try {
+        // Use API.importLocalData() to push all localStorage data to server
+        const result = await API.importLocalData();
+        if ($syncDataMessage) {
+          const counts = result.imported ? Object.values(result.imported).reduce((a, b) => a + b, 0) : 0;
+          $syncDataMessage.textContent = `✅ Synced ${counts} records to server successfully!`;
+          $syncDataMessage.className = 'login-message';
+        }
+        console.log('[Sync] Local data pushed to server:', result);
+      } catch (e) {
+        console.warn('[Sync] Failed to push data to server:', e);
+        if ($syncDataMessage) { $syncDataMessage.textContent = '❌ Failed to sync data: ' + e.message; $syncDataMessage.className = 'login-message error'; }
+      } finally {
+        $btnPushToServer.disabled = false;
+        $btnPushToServer.textContent = '⬆ Push All Data to Server';
+      }
+    });
+  }
+
+  if ($btnPullFromServer) {
+    $btnPullFromServer.addEventListener('click', async () => {
+      if (!apiConnected) {
+        if ($syncDataMessage) { $syncDataMessage.textContent = 'Cannot connect to server. Please check your connection.'; $syncDataMessage.className = 'login-message error'; }
+        return;
+      }
+      $btnPullFromServer.disabled = true;
+      $btnPullFromServer.textContent = 'Pulling...';
+      if ($syncDataMessage) { $syncDataMessage.textContent = ''; $syncDataMessage.className = 'login-message'; }
+      try {
+        await syncFromServer();
+        renderAll();
+        if ($syncDataMessage) { $syncDataMessage.textContent = '✅ Data refreshed from server!'; $syncDataMessage.className = 'login-message'; }
+      } catch (e) {
+        console.warn('[Sync] Failed to pull data from server:', e);
+        if ($syncDataMessage) { $syncDataMessage.textContent = '❌ Failed to pull: ' + e.message; $syncDataMessage.className = 'login-message error'; }
+      } finally {
+        $btnPullFromServer.disabled = false;
+        $btnPullFromServer.textContent = '⬇ Pull Latest from Server';
       }
     });
   }
@@ -4255,9 +4379,8 @@ if (currentPage === 'login.html') {
   API.verifyToken().then((user) => {
     if (user) {
       apiConnected = true;
-      // Clear stale localStorage before syncing fresh from API
-      Object.values(STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
-      return syncFromServer().then(() => renderAll());
+      // Push local data first, then sync from server
+      return pushAllLocalData().then(() => syncFromServer()).then(() => renderAll());
     }
   }).catch(() => {});
 }

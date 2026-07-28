@@ -611,6 +611,16 @@
               <p>Change your username and password used to sign in</p>
             </div>
             <button id="btnChangeCredentials" type="button" class="button primary" style="width:100%;">Change My Login Details</button>
+            <hr class="section-divider" />
+            <div class="panel-header">
+              <h3>Data Sync</h3>
+              <p>Upload all local data to server so it's available on all devices</p>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button id="btnPushToServer" type="button" class="button primary" style="flex:1;">⬆ Push All Data to Server</button>
+              <button id="btnPullFromServer" type="button" class="button secondary" style="flex:1;">⬇ Pull Latest from Server</button>
+            </div>
+            <p id="syncDataMessage" class="login-message" style="margin-top:8px;"></p>
           </div>
         </div>
       </section>
